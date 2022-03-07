@@ -1,0 +1,22 @@
+body {
+    background-color: #000000;
+}
+
+#bubbles {
+    display: block;
+    margin: auto;
+    z-index: -1;
+}
+
+.blink {
+    animation: blinker 1.5s ease-in-out;
+    animation-iteration-count: 7;
+}
+
+@keyframes blinker {
+    50% {
+        fill: black;
+        stroke: grey;
+        stroke-width: 2.5;
+    }
+}

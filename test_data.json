@@ -1,0 +1,50 @@
+{
+    "categories": [
+        {
+            "name": "Political",
+            "color": "#fce62b",
+            "val": 0,
+            "text" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+            "position": {
+                "x": 110,
+                "y": 500,
+                "angle": 90
+            }
+        },
+        {
+            "name": "Ecological",
+            "color": "#00975f",
+            "val": 0,
+            "text" : [
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum"
+            ],
+            "position": {
+                "x": 500,
+                "y": 110,
+                "angle": 180
+            }
+        },
+        {
+            "name": "Ethical",
+            "color": "#00a2dc",
+            "val":0,
+            "text" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+            "position": {
+                "x": 890,
+                "y": 500,
+                "angle": -90
+            }
+        },
+        {
+            "name": "Mythical",
+            "color": "#e30613",
+            "val": 0,
+            "text" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+            "position": {
+                "x": 500,
+                "y": 890,
+                "angle": 0
+            }
+        }
+    ]
+}
