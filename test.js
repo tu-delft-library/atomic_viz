@@ -17,8 +17,8 @@ let simulation = d3.forceSimulation()
     .force("center", d3.forceCenter(width, height))
     .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
     .force('charge', d3.forceManyBody().strength( -2))
-    .force('x', d3.forceX(width).strength(0.05))
-    .force('y', d3.forceY(height).strength(0.05))
+    .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
+    .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
     .on('tick', ticked);
 
 
@@ -132,6 +132,7 @@ d3.json("test_data.json")
                     enter
                     .append('circle')
                     .attr('r', d => d.r)
+                    .attr('id', d => d.id)
                     //.style("stroke-width", 1)
                     //.attr('stroke', '#dadada')          // Stroke of big circle. Delete when positioning is good.
                     .attr('fill', d => d.color)
@@ -167,9 +168,9 @@ d3.json("test_data.json")
             simulation
             .force("center", d3.forceCenter(width, height))
             .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
-            .force('charge', d3.forceManyBody().strength(2))
-            .force('x', d3.forceX(width).strength(0.05))
-            .force('y', d3.forceY(height).strength(0.05))
+            .force('charge', d3.forceManyBody().strength(2 + 3* 1/atomData.length))
+            .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
+            .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
             .on('tick', ticked);
 
             simulation.alpha(1);
@@ -179,9 +180,9 @@ d3.json("test_data.json")
                 simulation
                 .force("center", d3.forceCenter(width, height))
                 .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
-                .force('charge', d3.forceManyBody().strength(-2))
-                .force('x', d3.forceX(width).strength(0.05))
-                .force('y', d3.forceY(height).strength(0.05))
+                .force('charge', d3.forceManyBody().strength(-2 - 3* 1/atomData.length))
+                .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
+                .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
                 .on('tick', ticked);
 
                 simulation.alpha(1);
@@ -189,6 +190,14 @@ d3.json("test_data.json")
             });
 
             delay(2500).then(() => {
+                simulation
+                .force("center", d3.forceCenter(width, height))
+                .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
+                .force('charge', d3.forceManyBody().strength(-2))
+                .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
+                .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
+                .on('tick', ticked);
+
                 simulation.alpha(1);
                 simulation.restart();
             });
@@ -235,12 +244,67 @@ d3.json("test_data.json")
                 });
 
                 let newData = data.filter(d => d.goTime > lastDate);
+                let oldData = data.filter(d => d.goTime <= lastDate);
+
 
                 dateList = data.map(d => d.goTime)
                 lastDate = Math.max(...dateList);
 
+
                 //select all bubbles
                 let bubbles = bubble.selectAll(".bubbles");
+
+
+                console.log("oldData");
+                console.log(oldData.length);
+                console.log(atomData.length);
+
+                // console.log(oldData);
+                // console.log("atomData before");
+
+                // console.log(atomData);
+
+                oldData.forEach(d => {
+                    try {
+                        let x = atomData.filter(elem => elem.id == d.id)[0];
+                        x.r = d.r;
+                    }
+                    catch (e){
+                    }
+                    
+                    //d3.select("#" + data.id).attr('r', d.r);
+                });
+                // console.log("atomData after");
+                simulation.nodes(atomData);
+                // simulation.alpha(0.5);
+                // simulation.restart();
+
+                console.log(atomData);
+
+                //atomData = oldData;
+
+                bubbles
+                    .data(atomData)
+                    .join(
+                        enter => {
+                        },
+                        update => { //remove the blinking if it was still on
+                            update
+                            //.attr('cx', d => d.x)
+                            //.attr('cy', d => d.y)
+                            .attr('r', d => d.r);
+                            //.classed('blink', false);
+        
+                            //update.each(d => console.log("one changed!"));
+                            //bubbles = update.merge(bubbles);
+        
+        
+                            bubbles = update.merge(bubbles)
+                        });
+                //simulation.nodes(atomData);
+                //simulation.alpha(0.5);
+                //simulation.restart();
+
 
                 newData.forEach(d => {
                     //console.log(d.goTime - Date.now());
@@ -262,7 +326,8 @@ d3.json("test_data.json")
                         .datum(d)
                         .attr('cx', d.x) 
                         .attr('cy', d.y)
-                        .attr('r', d.r * 3)
+                        .attr('r', d.r + 0.003 * atomData.length)
+                        .attr('id', d.id)
                        // .style("stroke-width", 1)
                        // .attr('stroke', '#dadada')          // Stroke of big circle. Delete when positioning is good.
                         .attr('fill', d.color)
@@ -270,7 +335,7 @@ d3.json("test_data.json")
                         .transition()
                         .duration(4000)
                         .attr('r', d.r)
-                        .merge(bubbles);
+                        //.merge(bubbles)
 
 
 

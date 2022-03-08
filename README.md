@@ -1,1 +1,2 @@
-# atomic_viz
+# Atomic_visualisation
+ Javascript visualisation
