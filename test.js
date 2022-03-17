@@ -167,7 +167,7 @@ d3.json("test_data.json")
         setInterval(() => {
             simulation
             .force("center", d3.forceCenter(width, height))
-            .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
+            .force('collide', d3.forceCollide(d => 0).strength(0.5))
             .force('charge', d3.forceManyBody().strength(2 + 3* 1/atomData.length))
             .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
             .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
@@ -176,26 +176,26 @@ d3.json("test_data.json")
             simulation.alpha(1);
             simulation.restart();
 
-            delay(1000).then(() => {
-                simulation
-                .force("center", d3.forceCenter(width, height))
-                .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
-                .force('charge', d3.forceManyBody().strength(-2 - 3* 1/atomData.length))
-                .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
-                .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
-                .on('tick', ticked);
+            // delay(1000).then(() => {
+            //     simulation
+            //     .force("center", d3.forceCenter(width, height))
+            //     .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
+            //     .force('charge', d3.forceManyBody().strength(-3 -2 * 1/atomData.length))
+            //     .force('x', d3.forceX(width).strength(d => 1/Math.abs((d.x-width))*0.1 + 0.01 + 0.00004* atomData.length))
+            //     .force('y', d3.forceY(height).strength(d => 1/Math.abs((d.y-height))*0.1 + 0.01 + 0.00004* atomData.length))
+            //     .on('tick', ticked);
 
-                simulation.alpha(1);
-                simulation.restart();
-            });
+            //     simulation.alpha(1);
+            //     simulation.restart();
+            // });
 
-            delay(2500).then(() => {
+            delay(1500).then(() => {
                 simulation
                 .force("center", d3.forceCenter(width, height))
                 .force('collide', d3.forceCollide(d => d.r + 1).strength(1))
                 .force('charge', d3.forceManyBody().strength(-2))
-                .force('x', d3.forceX(width).strength(0.01 + 0.00004* atomData.length))
-                .force('y', d3.forceY(height).strength(0.01 + 0.00004* atomData.length))
+                .force('x', d3.forceX(width).strength(d => 0.01 + 0.00004* atomData.length))
+                .force('y', d3.forceY(height).strength(d => 0.01 + 0.00004* atomData.length))
                 .on('tick', ticked);
 
                 simulation.alpha(1);
@@ -203,7 +203,7 @@ d3.json("test_data.json")
             });
 
 
-        }, 15000);
+        }, 1300);
         setInterval(()=> {
             fetch(`http://library-open-spaces.tudelft.nl/api/users/classification`)       // Connect to Flask server
             .then(response => response.json())
@@ -409,19 +409,58 @@ function update_percentages(data) {
 };
 
 
-function ticked() {
-   // console.log("tick");
 
-    //let bubbles = bubble.selectAll(".bubbles");
+function bounds(radius, b, coord, r) {
 
-    //console.log(bubbles);
+    //coord^2 + b^2 < r^2 //assumes b has to be within the circle, so need a min of 0 and max of width 
+    //coord^2 < r^2 + b^2
+    // -sqrt(r^2 - b^2)) < coord < sqrt(r^2 - b^2))
+    //  radius -sqrt(r^2 - b^2)) < coord < radius + sqrt(r^2 - b^2))
 
-    bubble.selectAll(".bubbles")
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
+    let eff_radius = radius - r,
+        b_new = b - radius,
+        coord_new = coord - radius,
+        allowed_hyp2 = Math.pow(eff_radius, 2),
+        hyp2 = Math.pow(b_new,2) + Math.pow(coord_new,2);
+
+    if (hyp2 <= allowed_hyp2){
+        return coord;
+    }
+
+    //else get the angle
+
     
-    //bubbles.each(d=> console.log(d.x));
-};
+    let angle = Math.atan(b_new/coord_new),
+        pos = Math.cos(angle) * eff_radius * ((coord_new >= 0) ? 1 : -1);
+
+    return pos + radius;
+    // let eff_radius = radius - r,
+    //     hyp2 = Math.pow(eff_radius, 2),
+    //     new_b = Math.min(width - r, Math.max(r, b)), //bind b within the circle, to prevent sqrt(x<0), can try to fix this differently by calculating the angle, and then checking what the hyp would be a bounding that
+
+    //     new_coord = Math.max(0,coord),
+
+    //     b2 = Math.pow((new_b - eff_radius), 2),
+    //     a = Math.sqrt(hyp2 - b2);
+
+    // // radius - sqrt(hyp^2 - b^2) < coord < sqrt(hyp^2 - b^2) + radius
+    // new_coord = Math.max(eff_radius - a,
+    //             Math.min(a + eff_radius, new_coord)
+    //             );
+
+                
+
+    //return new_coord;
+}
+
+
+function ticked() {
+    bubble.selectAll(".bubbles")
+    .attr("cx", d => {d.bounded_x = bounds(500, d.y, d.x, d.r); return d.bounded_x;} )
+    .attr("cy", d => {d.bounded_y = bounds(500, d.x, d.y, d.r);  return d.bounded_y;} )
+    .forEach(d => {d.x = d.bounded_x;
+                   d.y = d.bounded_y});
+    };
 
 function delay(time) {
     time = Math.max(0, time);
