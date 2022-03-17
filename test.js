@@ -203,7 +203,7 @@ d3.json("test_data.json")
             });
 
 
-        }, 1300);
+        }, 13000);
         setInterval(()=> {
             fetch(`http://library-open-spaces.tudelft.nl/api/users/classification`)       // Connect to Flask server
             .then(response => response.json())
